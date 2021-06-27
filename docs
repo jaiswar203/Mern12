@@ -1,0 +1,129 @@
+1.For authorization install 
+
+jwt-decode and react-google-login
+
+In client
+npm i jwt-decode react-google-login
+
+In Server
+
+npm i jsonwebtoken bcryptjs
+
+
+2. Google Auth
+
+To implement the google auth We have to first import the package
+
+import {GoogleLogin} from 'react-google-login'
+
+
+<GoogleLogin 
+                    clientId="291655623767-ujjo6a6avh2uujsntjosvvrgfegu6c0k.apps.googleusercontent.com"
+                    render={(renderProps)=>(
+                        <Button className={classes.googleButton} color='primary' fullWidth onClick={renderProps.onClick} disabled={renderProps.disabled} startIcon={<Icon />}variant="contained"
+                        >Google SignIn
+                        </Button>
+                    )}
+                    onSuccess={googleSuccess}
+                    onFailure={googleFailure}
+                    cookiePolicy="single_host_origin"
+                />
+
+
+we have to create out auth client id in 
+
+https://console.cloud.google.com/
+
+
+Steps to create ) 0Auth id:
+
+1.go to given link 
+2. On Menu click on Api and services
+3. click on dashboard
+4. Click on consent screen and create your api or whatever its called
+5. Go Credentials and Click on create credentials 
+6. Fill the imp details , in end it will five u the clientId
+
+Now There is two parameter 
+onSuccess and onFailure
+
+onSuccess={googleSuccess}
+onFailure={googleFailure}
+
+we are ?. operator , it will not throw error if any error occured
+
+const googleSuccess=async(res)=>{
+        const result=res?.profileObj 
+        const token=res?.tokenId 
+        try {
+            dispatch({type:'AUTH',data:{result,token}})
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+To retrieve the data we use json
+
+i.e
+const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile'))) // where profile is localstorage or token name
+
+we can use useLocation with useEffect if any change occurs it update immediately
+
+e.g
+
+import { useHistory,useLocation } from 'react-router'
+const location=useLocation()
+useEffect(() => {
+        const token=user?.token
+        setUser(JSON.parse(localStorage.getItem('profile')))
+    }, [location])
+
+here if user logged in it will immediately change the logo and name
+
+
+3. Form data
+
+to populate the formData remember input name should same as useState name
+
+i.e
+
+const intialState={FirstName:'',LastName:'',Email:'',Password:'',confirmPassword:''}
+
+<Input name='FirstName' label='Fistname' handleChange={handleChange}  half />
+<Input name='LastName' label='lastname' handleChange={handleChange}  half />
+
+Here name are same
+
+in Handlechange
+
+const handleSubmit=(e)=>{
+        e.preventDefault()
+        console.log(formData)
+    }
+    const handleChange=(e)=>{
+        setFormData({...formData,[e.target.name]:e.target.value})
+    }
+
+4. Identifynng token:
+
+to differentiate between google )auth token and custom token 
+
+Google Oauth token is greater than 500 in length whereas
+custom token is smaller tha 500 in length
+
+5. Important 
+
+req.userId in auth middleware is very important
+
+6. axios 
+import axios from 'axios'
+
+use create method in axios
+
+i.e 
+
+const API=axios.create({baseURL:'http://localhost:5000'})
+
+7. Authentication :
+ In fronted Authentication form , name email ana other info has to be same as in backend otherwise we get very big error
